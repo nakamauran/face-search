@@ -1,0 +1,24 @@
+# 顔類似検索プロトタイプの実行時依存パッケージ。
+# 対応 Python: 3.10〜3.14（主対象は 3.13.17。3.15 は未対応）。
+# 下限バージョンの根拠は PyPI の cp313 / cp314 wheel の有無
+# （2026-11-17 確認。最新: insightface 2.1 / onnxruntime 1.32.0 /
+#  numpy 2.5.5 / Pillow 13.0.0 / opencv-python-headless 5.0.0.93）。
+# pip は実行中の Python に合う最新版を入れるため、下限は「最低限これ以上」の意味。
+
+# py3-none-any wheel のため Python バージョンに依存しない。
+insightface>=2.1
+# cp313 wheel は 1.20.0〜、cp314 wheel は 1.24.1〜。1.29 以上を推奨。
+# 3.13 以上は 1.24.1 以上が必要（1.24.1 以降に cp310 wheel がないため分離）。
+onnxruntime>=1.24.1; python_version >= "3.13"
+onnxruntime>=1.20.0; python_version < "3.13"
+# cp37-abi3 wheel のため 3.10〜3.15 で同じ wheel が使える。
+opencv-python-headless>=4.10.0.84
+# cp313 wheel は 2.1.0〜、cp314 wheel は 2.3.2〜（2.3.2 以降に cp310 wheel がない）。
+numpy>=2.3.2; python_version >= "3.13"
+numpy>=2.1.0; python_version < "3.13"
+# cp313 wheel は 10.4.0〜、cp314 wheel は 11.3.0〜。
+Pillow>=11.3.0
+
+# ビルド用（実行時には不要）。exe を作るときは build_exe.bat /
+# build_exe.ps1 が pyinstaller を別途インストールする。
+# pyinstaller

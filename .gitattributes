@@ -1,0 +1,18 @@
+# 改行コードの既定は Git に任せる
+* text=auto
+
+# Windows 用スクリプトは CRLF のまま保つ。
+# build_exe.bat は cmd.exe が読むため CP932（Shift-JIS）で保存されている。
+# GitHub の Web 表示では文字化けするが、clone すればそのまま動く。
+*.bat text eol=crlf
+*.ps1 text eol=crlf
+
+# それ以外は LF に統一する
+*.py    text eol=lf
+*.spec  text eol=lf
+*.md    text eol=lf
+*.txt   text eol=lf
+
+# バイナリ扱い（差分を取らない）
+*.npz   binary
+*.onnx  binary

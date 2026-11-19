@@ -1,0 +1,48 @@
+# 顔類似検索プロトタイプの GPU（CUDA）版 依存パッケージ。
+#
+# NVIDIA 製 GPU（CUDA）で動かす場合に requirements.txt の代わりに使う。
+# onnxruntime / onnxruntime-gpu / onnxruntime-directml は同居できない
+# （同じ onnxruntime を提供するため競合する）。切り替えるときは
+# `pip uninstall -y onnxruntime onnxruntime-directml` で古い方を消すか、
+# 新しい venv を作ること。
+#
+# 対応 Python: 3.10〜3.14（主対象は 3.13.17。3.15 は未対応）。
+# 下限バージョンの根拠は PyPI の cp313 / cp314 wheel の有無
+# （2026-11-19 確認。最新: onnxruntime-gpu 1.32.0）。
+#
+# onnxruntime-gpu は 1.27 以降、既定のビルドが CUDA 13.0 になる
+# （1.26.x までは CUDA 12.8）。CUDA 12.8 ビルドは CUDA 13 系ドライバの
+# 環境ではプロバイダ DLL の読み込み時に DllMain 失敗（WinError 1114）
+# で動かない。ドライバ 621.x 環境では WinError 1114 で動かない既知の
+# 問題があるため、CUDA 13 ビルドが必須。CUDA 13 ビルドは Python 3.11〜3.14
+# が対象（3.10 には wheel が無いため下の CUDA 12.8 行にフォールバック。
+# 3.10 で CUDA を使う場合は CUDA 12 系のドライバが必要）。
+# CUDA Toolkit の別途インストールは不要な場合が多い（CUDA / cuDNN の
+# 実行時ライブラリは nvidia-* パッケージとして一緒に入る）。ただし
+# [cuda,cudnn] エクストラが必須：`pip install onnxruntime-gpu` だけでは
+# nvidia-* は入らず、CUDAExecutionProvider が一覧に出ない（GPU を試す
+# 前に静かに CPU が選ばれる）。
+# NVIDIA ドライバは CUDA 13 対応（R580 以上）にしておくこと
+# （nvidia-smi で確認）。
+#
+# 使い方（Python 版）:
+#   py -3.13 -m venv .venv-gpu
+#   .\.venv-gpu\Scripts\Activate.ps1
+#   pip install -r requirements-gpu-cuda.txt
+#   python app.py
+# exe 版で使う場合は build_exe.bat cuda でビルドすること。
+
+# py3-none-any wheel のため Python バージョンに依存しない。
+insightface>=2.1
+# cp311〜cp314 wheel は 1.27.0〜。1.32.0 は 2026-11-19 時点の PyPI 最新安定版。
+# 3.11 以上は CUDA 13 ビルド（>=1.27,<1.33）。3.10 には CUDA 13 ビルドの
+# wheel が無いため CUDA 12.8 行にフォールバック（1.24.1 以降に cp310 wheel がないため <1.24.1）。
+onnxruntime-gpu[cuda,cudnn]>=1.27,<1.33; python_version >= "3.11"
+onnxruntime-gpu[cuda,cudnn]>=1.20.0,<1.24.1; python_version < "3.11"
+# cp37-abi3 wheel のため 3.10〜3.15 で同じ wheel が使える。
+opencv-python-headless>=4.10.0.84
+# cp313 wheel は 2.1.0〜、cp314 wheel は 2.3.2〜（2.3.2 以降に cp310 wheel がない）。
+numpy>=2.3.2; python_version >= "3.13"
+numpy>=2.1.0; python_version < "3.13"
+# cp313 wheel は 10.4.0〜、cp314 wheel は 11.3.0〜。
+Pillow>=11.3.0
